@@ -7,9 +7,9 @@ test.describe('Desktop Login Tests', () => {
   });
 
   test('login test', async ({ page }) => {
-    await page.locator('[data-test="email"]').fill('customer@practicesoftwaretesting.com');
-    await page.locator('[data-test="password"]').fill('welcome01');
-    await page.locator('[data-test="login-submit"]').click();
+    await page.getByTestId('email').fill('customer@practicesoftwaretesting.com');
+    await page.getByTestId('password').fill('welcome01');
+    await page.getByTestId('login-submit').click();
 
     await expect(page).toHaveURL(/\/account/);
     await expect(page).toHaveTitle(/Overview/);

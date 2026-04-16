@@ -7,8 +7,9 @@ export default defineConfig({
   reporter: 'html',
 
   use: {
-    baseURL: 'https://practicesoftwaretesting.com',
-    headless: true,
-    trace: 'on-first-retry',
+  baseURL: 'https://practicesoftwaretesting.com',
+  headless: true,
+  trace: 'on-first-retry',
+  testIdAttribute: 'data-test',
   },
 });
