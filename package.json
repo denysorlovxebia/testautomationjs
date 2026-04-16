@@ -1,0 +1,17 @@
+{
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/denysorlovxebia/testautomationjs.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/denysorlovxebia/testautomationjs/issues"
+  },
+  "homepage": "https://github.com/denysorlovxebia/testautomationjs#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.6.0"
+  }
+}
