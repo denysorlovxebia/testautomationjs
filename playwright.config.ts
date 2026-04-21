@@ -8,8 +8,8 @@ export default defineConfig({
 
   use: {
   baseURL: 'https://practicesoftwaretesting.com',
-  headless: true,
+  headless: false,
   trace: 'on-first-retry',
   testIdAttribute: 'data-test',
-  },
+},
 });

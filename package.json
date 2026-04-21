@@ -3,6 +3,9 @@
     "type": "git",
     "url": "git+https://github.com/denysorlovxebia/testautomationjs.git"
   },
+  "scripts": {
+    "lint": "npx eslint . --fix "
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -11,7 +14,12 @@
   },
   "homepage": "https://github.com/denysorlovxebia/testautomationjs#readme",
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.59.1",
-    "@types/node": "^25.6.0"
+    "@types/node": "^25.6.0",
+    "eslint": "^10.2.1",
+    "eslint-plugin-playwright": "^2.10.2",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.0"
   }
 }
