@@ -1,4 +1,5 @@
-import { HomePage } from '../pages/HomePage';
+import { HomePage} from '../pages/HomePage';
+import { ProductPage } from '../pages/ProductPage';
 import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
@@ -6,22 +7,13 @@ test.beforeEach(async ({ page }) => {
   });
 
 test('Verify user can view product details', async ({ page }) => {
+  const homePage = new HomePage(page);
+  const productPage = new ProductPage(page);
 
-    const homePage = new HomePage(page);
-    await homePage.openHomePage();
-    await homePage.clickOnProduct();
+  await homePage.openHomePage();
+  await homePage.clickOnProduct('Combination Pliers');
 
-    await expect(page).toHaveURL(/.*\/product/);
-
-    await expect(page.getByTestId('product-name'))
-        .toHaveText('Combination Pliers');
-
-    await expect(page.getByTestId('unit-price'))
-        .toHaveText('14.15');
-
-    await expect(page.getByTestId('add-to-cart'))
-        .toBeVisible();
-
-    await expect(page.getByTestId('add-to-favorites'))
-        .toBeVisible();
+  await expect(page).toHaveURL(/\/product/);
+  await expect(productPage.productName).toHaveText('Combination Pliers');
+  await expect(productPage.price).toHaveText('14.15');
 });

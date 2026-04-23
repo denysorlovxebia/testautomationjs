@@ -1,22 +1,28 @@
-import { Page } from "@playwright/test";
+import { Page, Locator, expect } from '@playwright/test';
 
 export class HomePage {
-    page: Page;
-    constructor(page: Page) {
-        this.page = page;
-    }
+  readonly page: Page;
+  readonly products: Locator;
 
-   async openHomePage() {
-    await this.page.goto('https://practicesoftwaretesting.com');
+  constructor(page: Page) {
+    this.page = page;
+    this.products = page.locator('[data-test^="product-"]');
+  }
+
+  async openHomePage() {
+    await this.page.goto('/');
+  }
+
+ async clickOnProduct(productName: string) {
+  const product = this.page.locator('a[data-test^="product-"]', {
+    has: this.page.getByText(productName),
+  });
+
+  await expect(product).toBeVisible();
+
+  await Promise.all([
+    this.page.waitForURL(/\/product/),
+    product.click(),
+  ]);
 }
- 
-async clickOnProduct() {
-    const product = this.page.getByAltText('Combination Pliers');
-    await product.waitFor({ state: 'visible' });
-
-    await Promise.all([
-        this.page.waitForURL(/.*\/product/),
-        product.click()
-    ]);
- }
 }

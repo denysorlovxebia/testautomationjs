@@ -1,7 +1,9 @@
 {
   "baseURL": "./",
   "compilerOptions": {
-    /* Language and Environment */
+  "types": ["node", "@playwright/test"],
+
+/* Language and Environment */
     "target": "es2016", /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
     
     /* Modules */
