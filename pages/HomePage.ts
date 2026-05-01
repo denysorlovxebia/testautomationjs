@@ -1,35 +1,35 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 
 export class HomePage {
   readonly page: Page;
-  readonly products: Locator;
-  readonly cartIcon: Locator;
+  readonly sortDropdown: Locator;
+  readonly productNames: Locator;
+  readonly productPrices: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.products = page.locator('[data-test^="product-"]');
-    this.cartIcon = this.page.getByTestId('nav-cart');
+    this.sortDropdown = page.getByTestId('sort');
+    this.productNames = page.getByTestId('product-name');
+    this.productPrices = page.getByTestId('product-price');
   }
-async getProductNames() {
-  return await this.page.locator('[data-test="product-name"]').allTextContents();
-}
+
   async openHomePage() {
     await this.page.goto('/');
   }
-  async openCart() {
-  await this.cartIcon.click();
-}
 
- async clickOnProduct(productName: string) {
-  const product = this.page.locator('a[data-test^="product-"]', {
-    has: this.page.getByText(productName),
-  });
+  async sortBy(value: string) {
+    await this.sortDropdown.selectOption(value);
+  }
 
-  await expect(product).toBeVisible();
+  async getProductNames() {
+    return await this.productNames.allTextContents();
+  }
 
-  await Promise.all([
-    this.page.waitForURL(/\/product/),
-    product.click(),
-  ]);
-}
+  async getProductPrices() {
+    const priceTexts = await this.productPrices.allTextContents();
+
+    return priceTexts.map(t =>
+      parseFloat(t.replace('$', '').trim())
+    );
+  }
 }

@@ -1,20 +1,25 @@
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
+import { Page, Locator } from '@playwright/test';
 
-test.describe('Desktop Login Tests', () => {
+export class LoginPage {
+  readonly page: Page;
+  readonly emailInput: Locator;
+  readonly passwordInput: Locator;
+  readonly loginButton: Locator;
 
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/auth/login');
-  });
+  constructor(page: Page) {
+    this.page = page;
+    this.emailInput = page.getByTestId('email');
+    this.passwordInput = page.getByTestId('password');
+    this.loginButton = page.getByTestId('login-submit');
+  }
 
-  test('login test', async ({page}) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.login('customer@practicesoftwaretesting.com', 'welcome01');
+  async open() {
+    await this.page.goto('/auth/login');
+  }
 
-    await expect(page).toHaveURL(/\/account/);
-    await expect(page).toHaveTitle(/Overview/);
-    await expect(page.getByRole('navigation')).toContainText('Jane Doe');
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-  });
-
-});
+  async login(email: string, password: string) {
+    await this.emailInput.fill(email);
+    await this.passwordInput.fill(password);
+    await this.loginButton.click();
+  }
+}

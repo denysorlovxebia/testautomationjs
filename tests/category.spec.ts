@@ -18,28 +18,33 @@ for (const data of testData) {
 
     const filters = page.locator('#filters');
 
-    // Get product names BEFORE applying filter
+    // Get products BEFORE filtering
     const allProducts = await page
-      .locator('[data-test="product-name"]')
+      .getByTestId('product-name')
       .allTextContents();
 
-    // Select main category (Power Tools)
+    // Apply filters
     await filters.getByLabel(data.category).check();
-
-    // Select subcategory (Sander)
     await filters.getByLabel(data.subCategory).check();
 
-    // Wait for UI update (wait for first product to be visible again)
-    const productNamesLocator = page.locator('[data-test="product-name"]');
+    // Wait for UI update
+    const productNamesLocator = page.getByTestId('product-name');
     await expect(productNamesLocator.first()).toBeVisible();
 
-    // Get product names AFTER filtering
+    // Get products AFTER filtering
     const filteredProducts = await productNamesLocator.allTextContents();
 
-    // Ensure filtered list is not empty
+    // Ensure list is not empty
     expect(filteredProducts.length).toBeGreaterThan(0);
 
-    // Ensure list has changed after applying filter
+    // Ensure list changed
     expect(filteredProducts).not.toEqual(allProducts);
+
+    // so we check that AT LEAST one product matches expected filter
+    const hasMatchingProduct = filteredProducts.some(name =>
+      name.includes(data.subCategory)
+    );
+
+    expect(hasMatchingProduct).toBeTruthy();
   });
 }

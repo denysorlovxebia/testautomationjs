@@ -1,15 +1,20 @@
-import { test as setup, expect } from '@playwright/test';
+import { test as setup } from '@playwright/test';
+import { LoginPage } from '../pages/LoginPage';
+import { AccountPage } from '../pages/AccountPage';
 
 setup('authenticate', async ({ page }) => {
-  await page.goto('/auth/login');
+  const loginPage = new LoginPage(page);
+  const accountPage = new AccountPage(page);
 
-  await page.getByTestId('email').fill('customer@practicesoftwaretesting.com');
-  await page.getByTestId('password').fill('welcome01');
-  await page.getByTestId('login-submit').click();
+  await loginPage.open();
+  await loginPage.login(
+    'customer@practicesoftwaretesting.com',
+    'welcome01'
+  );
 
   await page.waitForURL(/\/account/);
 
-  // await expect(page.getByText('My account')).toBeVisible();
-  await expect(page.getByTestId('page-title')).toBeVisible();
+  await accountPage.isLoaded();
+
   await page.context().storageState({ path: 'storageState.json' });
 });

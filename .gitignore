@@ -6,12 +6,3 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
-{
-  name: 'chromium',
-  testIgnore: /.*auth\.login\.spec\.ts/,
-  use: {
-    browserName: 'chromium',
-    storageState: 'storageState.json',
-  },
-  dependencies: ['auth'],
-}
