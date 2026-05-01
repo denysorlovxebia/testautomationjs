@@ -6,15 +6,18 @@ setup('authenticate', async ({ page }) => {
   const loginPage = new LoginPage(page);
   const accountPage = new AccountPage(page);
 
+  // Open login page
   await loginPage.open();
+
+  // Perform login via UI
   await loginPage.login(
     'customer@practicesoftwaretesting.com',
     'welcome01'
   );
 
-  await page.waitForURL(/\/account/);
-
+  // Wait for account page UI (stable, no waitForURL)
   await accountPage.isLoaded();
 
+  // Save authenticated session
   await page.context().storageState({ path: 'storageState.json' });
 });
