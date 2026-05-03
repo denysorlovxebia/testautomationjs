@@ -8,8 +8,9 @@ export class CartPage {
 
   constructor(page: Page) {
     this.page = page;
+
     this.rows = page.locator('tbody tr');
-    this.productTitle = page.locator('tbody tr td').first();
+    this.productTitle = page.getByTestId('product-title');
     this.checkoutBtn = page.getByTestId('proceed-1');
   }
 }
