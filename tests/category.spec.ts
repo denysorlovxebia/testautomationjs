@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { HomePage } from '../pages/HomePage';
 
 enum Category {
   HAND_TOOLS = 'Hand Tools',
@@ -14,33 +15,23 @@ test.use({ storageState: 'storageState.json' });
 
 for (const data of testData) {
   test(`Verify filtering by "${data.subCategory}" in ${data.category}`, async ({ page }) => {
-    await page.goto('/');
+    const homePage = new HomePage(page);
 
-    const filters = page.locator('#filters');
+    await homePage.openHomePage();
 
-    // Get products BEFORE filtering
-    const allProducts = await page
-      .getByTestId('product-name')
-      .allTextContents();
+    // BEFORE filtering
+    const allProducts = await homePage.getProductNames();
 
-    // Apply filters
-    await filters.getByLabel(data.category).check();
-    await filters.getByLabel(data.subCategory).check();
+    // Apply filters (перенесено в Page Object)
+    await homePage.applyFilters(data.category, data.subCategory);
 
-    // Wait for UI update
-    const productNamesLocator = page.getByTestId('product-name');
-    await expect(productNamesLocator.first()).toBeVisible();
+    // AFTER filtering
+    const filteredProducts = await homePage.getProductNames();
 
-    // Get products AFTER filtering
-    const filteredProducts = await productNamesLocator.allTextContents();
-
-    // Ensure list is not empty
+    // Assertions
     expect(filteredProducts.length).toBeGreaterThan(0);
-
-    // Ensure list changed
     expect(filteredProducts).not.toEqual(allProducts);
 
-    // so we check that AT LEAST one product matches expected filter
     const hasMatchingProduct = filteredProducts.some(name =>
       name.includes(data.subCategory)
     );
