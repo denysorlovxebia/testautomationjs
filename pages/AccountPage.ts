@@ -1,7 +1,15 @@
-import { Page } from "@playwright/test";
+import { Page, Locator } from '@playwright/test';
+
 export class AccountPage {
-    page: Page;
-    constructor(page: Page) {
-        this.page = page;
-    }
+  readonly page: Page;
+  readonly pageTitle: Locator;
+
+  constructor(page: Page) {
+    this.page = page;
+    this.pageTitle = page.getByTestId('page-title');
+  }
+
+  async isLoaded() {
+    await this.pageTitle.waitFor();
+  }
 }

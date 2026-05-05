@@ -1,4 +1,4 @@
-import { defineConfig } from '@playwright/test';
+import { defineConfig} from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
@@ -12,4 +12,24 @@ export default defineConfig({
   trace: 'on-first-retry',
   testIdAttribute: 'data-test',
 },
+
+projects: [
+    {
+      name: 'auth',
+      testMatch: /.*auth\.login\.spec\.ts/,
+      use: {
+        browserName: 'chromium',
+    },
+  },
+
+    {
+      name: 'chromium',
+      testIgnore: /.*auth\.login\.spec\.ts/, 
+      use: {
+        browserName: 'chromium',
+        storageState: 'storageState.json',
+      },
+      dependencies: ['auth'], 
+      },
+  ],
 });
