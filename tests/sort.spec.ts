@@ -1,7 +1,4 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../pages/HomePage';
-
-test.use({ storageState: 'storageState.json' });
+import { test, expect } from './fixtures';
 
 // SORT BY NAME
 const nameSortOptions = [
@@ -10,13 +7,11 @@ const nameSortOptions = [
 ];
 
 for (const option of nameSortOptions) {
-  test(`Sort by ${option.label}`, async ({ page }) => {
-    const homePage = new HomePage(page);
+  test(`Sort by ${option.label}`, async ({ app }) => {
+    await app.homePage.openHomePage();
+    await app.homePage.sortBy(option.value);
 
-    await homePage.openHomePage();
-    await homePage.sortBy(option.value);
-
-    const productNames = await homePage.getProductNames();
+    const productNames = await app.homePage.getProductNames();
 
     const sorted = [...productNames].sort((a, b) =>
       option.order === 'asc'
@@ -35,13 +30,11 @@ const priceSortOptions = [
 ];
 
 for (const option of priceSortOptions) {
-  test(`Sort by ${option.label}`, async ({ page }) => {
-    const homePage = new HomePage(page);
+  test(`Sort by ${option.label}`, async ({ app }) => {
+    await app.homePage.openHomePage();
+    await app.homePage.sortBy(option.value);
 
-    await homePage.openHomePage();
-    await homePage.sortBy(option.value);
-
-    const prices = await homePage.getProductPrices();
+    const prices = await app.homePage.getProductPrices();
 
     const sorted = [...prices].sort((a, b) =>
       option.order === 'asc' ? a - b : b - a

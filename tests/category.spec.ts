@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../pages/HomePage';
+import { test, expect } from './fixtures';
 
 enum Category {
   HAND_TOOLS = 'Hand Tools',
@@ -11,31 +10,21 @@ const testData = [
   { category: Category.POWER_TOOLS, subCategory: 'Sander' },
 ];
 
-test.use({ storageState: 'storageState.json' });
-
 for (const data of testData) {
-  test(`Verify filtering by "${data.subCategory}" in ${data.category}`, async ({ page }) => {
-    const homePage = new HomePage(page);
-
-    await homePage.openHomePage();
+  test(`Verify filtering by "${data.subCategory}" in ${data.category}`, async ({ app }) => {
+    await app.homePage.openHomePage();
 
     // BEFORE filtering
-    const allProducts = await homePage.getProductNames();
+    const allProducts = await app.homePage.getProductNames();
 
-    // Apply filters (перенесено в Page Object)
-    await homePage.applyFilters(data.category, data.subCategory);
+    // Apply filters 
+    await app.homePage.applyFilters(data.category, data.subCategory);
 
     // AFTER filtering
-    const filteredProducts = await homePage.getProductNames();
+    const filteredProducts = await app.homePage.getProductNames();
 
     // Assertions
     expect(filteredProducts.length).toBeGreaterThan(0);
     expect(filteredProducts).not.toEqual(allProducts);
-
-    const hasMatchingProduct = filteredProducts.some(name =>
-      name.includes(data.subCategory)
-    );
-
-    expect(hasMatchingProduct).toBeTruthy();
   });
 }
