@@ -1,24 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
-
-export type BillingAddress = {
-  firstName: string;
-  lastName: string;
-  address: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-};
-
-const DEFAULT_BILLING_ADDRESS: BillingAddress = {
-  firstName: 'John',
-  lastName: 'Doe',
-  address: '98 Test street',
-  city: 'Vienna',
-  state: 'Vienna',
-  postalCode: '1010',
-  country: 'Austria',
-};
+import { BillingAddress, DEFAULT_BILLING_ADDRESS } from '../test-data/billing';
 
 export class BillingAddressPage {
   readonly page: Page;
@@ -48,13 +29,7 @@ export class BillingAddressPage {
   async fillBillingAddress(
     billingAddress: Partial<BillingAddress> = DEFAULT_BILLING_ADDRESS
   ) {
-    if (await this.alreadyLoggedInMessage.isVisible().catch(() => false)) {
-      return;
-    }
-
     const {
-      firstName,
-      lastName,
       address,
       city,
       state,
@@ -65,17 +40,12 @@ export class BillingAddressPage {
       ...billingAddress,
     };
 
-    void firstName;
-    void lastName;
-
     const billingCountry = country;
     const billingPostalCode = postalCode;
     const billingHouseNumber = (address.match(/\d+/)?.[0] || '98').trim();
     const billingStreet = (address.replace(/\d+/g, '').trim() || 'Test street');
-    const billingCity = city;
-    const billingState = state;
 
-    if (await this.countryInput.isVisible().catch(() => false)) {
+    if (await this.countryInput.isVisible()) {
       if (/united states/i.test(billingCountry)) {
         await this.countryInput.selectOption('US');
       } else if (/austria/i.test(billingCountry)) {
@@ -85,31 +55,25 @@ export class BillingAddressPage {
       }
     }
 
-    if (await this.postalCodeInput.isVisible().catch(() => false)) {
-      await this.postalCodeInput.fill(billingPostalCode);
-    }
-
-    if (await this.houseNumberInput.isVisible().catch(() => false)) {
-      await this.houseNumberInput.fill(billingHouseNumber);
+    await this.fillIfVisible(this.postalCodeInput, billingPostalCode);
+    await this.fillIfVisible(this.houseNumberInput, billingHouseNumber, async () => {
       await this.houseNumberInput.press('Tab');
-    }
-
-    if (await this.streetInput.isVisible().catch(() => false)) {
-      await this.streetInput.fill(billingStreet);
-    }
-
-    if (await this.cityInput.isVisible().catch(() => false)) {
-      await this.cityInput.fill(billingCity);
-    }
-
-    if (await this.stateInput.isVisible().catch(() => false)) {
-      await this.stateInput.fill(billingState);
+    });
+    await this.fillIfVisible(this.streetInput, billingStreet);
+    await this.fillIfVisible(this.cityInput, city);
+    await this.fillIfVisible(this.stateInput, state, async () => {
       await this.stateInput.press('Tab');
-    }
+    });
+  }
+
+  private async fillIfVisible(locator: Locator, value: string, postFill?: () => Promise<void>) {
+    if (!(await locator.isVisible())) return;
+    await locator.fill(value);
+    if (postFill) await postFill();
   }
 
   async proceedToPayment() {
-    if (await this.alreadyLoggedInMessage.isVisible().catch(() => false)) {
+    if (await this.alreadyLoggedInMessage.isVisible()) {
       await this.loggedInProceedBtn.click();
       return;
     }
@@ -122,29 +86,27 @@ export class BillingAddressPage {
     billingAddress: Partial<BillingAddress> = DEFAULT_BILLING_ADDRESS
   ) {
     // Some sessions show "already logged in" gate before the address form.
-    if (await this.alreadyLoggedInMessage.isVisible().catch(() => false)) {
+    if (await this.alreadyLoggedInMessage.isVisible()) {
       await this.loggedInProceedBtn.click();
     }
 
     await this.fillBillingAddress(billingAddress);
 
-    if (await this.formProceedBtn.isVisible().catch(() => false)) {
+    if (await this.formProceedBtn.isVisible()) {
       await expect(this.formProceedBtn).toBeEnabled({ timeout: 15000 });
       await this.formProceedBtn.click();
     }
   }
 
   async isUserLoggedIn() {
-    const hasLoggedInMessage = await this.alreadyLoggedInMessage.isVisible().catch(() => false);
-    if (hasLoggedInMessage) {
+    if (await this.alreadyLoggedInMessage.isVisible()) {
       return true;
     }
 
     const signInLinkVisible = await this.page
       .getByRole('link', { name: 'Sign in' })
       .first()
-      .isVisible()
-      .catch(() => false);
+      .isVisible();
 
     return !signInLinkVisible;
   }

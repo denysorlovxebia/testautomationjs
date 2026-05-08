@@ -1,6 +1,7 @@
+import type { TestInfo } from '@playwright/test';
 import { test, expect } from './fixtures';
 
-test('E2E: Complete checkout flow for logged-in user', async ({ loggedInApp }) => {
+test('E2E: Complete checkout flow for logged-in user', async ({ loggedInApp }, testInfo: TestInfo) => {
   test.slow();
   const app = loggedInApp;
 
@@ -9,7 +10,10 @@ test('E2E: Complete checkout flow for logged-in user', async ({ loggedInApp }) =
   // Step 2: Get first product details
   const firstProduct = await app.homePage.getFirstProduct();
 
-  console.log(`Product: ${firstProduct.name}, Price: $${firstProduct.price}`);
+  await testInfo.attach('selected-product', {
+    body: Buffer.from(`Product: ${firstProduct.name}, Price: $${firstProduct.price}`),
+    contentType: 'text/plain',
+  });
 
   // Open product page
   await app.homePage.openFirstProduct();
@@ -22,9 +26,9 @@ test('E2E: Complete checkout flow for logged-in user', async ({ loggedInApp }) =
   await expect(app.page).toHaveURL(/checkout/);
 
   // Verify cart
+  await expect(app.cartPage.productTitle).toContainText(firstProduct.name);
   const cartInfo = await app.cartPage.getCartProductInfo();
 
-  expect(cartInfo.productName?.trim()).toContain(firstProduct.name.trim());
   expect(cartInfo.price).toBe(firstProduct.price);
   expect(cartInfo.total).toBe(firstProduct.price);
 

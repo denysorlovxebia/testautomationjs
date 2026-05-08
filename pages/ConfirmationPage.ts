@@ -23,12 +23,16 @@ export class ConfirmationPage {
       .or(this.page.getByText(/thank you/i))
       .or(this.page.getByTestId('order-success'))
       .or(this.page.getByTestId('payment-success'));
-    return await successLocator.first().waitFor({ state: 'visible', timeout: 10000 })
-      .then(() => true)
-      .catch(() => false);
+
+    try {
+      await successLocator.first().waitFor({ state: 'visible', timeout: 10000 });
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   async getOrderNumber() {
-    return await this.orderNumber.textContent();
+    return this.orderNumber.textContent();
   }
 }

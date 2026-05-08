@@ -23,13 +23,13 @@ export class HomePage {
 
   async getFirstProduct() {
     await this.productNames.first().waitFor({ state: 'visible' });
-    const name = await this.productNames.first().textContent();
+    const name = (await this.productNames.first().textContent()) ?? '';
 
     const priceText = await this.productPrices.first().textContent();
     const price = parseFloat(priceText?.replace('$', '').trim() || '0');
 
     return {
-      name: name || '',
+      name,
       price,
     };
   }

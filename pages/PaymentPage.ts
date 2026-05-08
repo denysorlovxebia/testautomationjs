@@ -1,15 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
-
-export type PaymentDetails = {
-  cardNumber: string;
-  expirationDate: string;
-  cvv: string;
-  cardholderName: string;
-};
-
-const DEFAULT_PAYMENT_CARD_NUMBER = '1111-1111-1111-1111';
-const DEFAULT_PAYMENT_CVV = '111';
-const DEFAULT_PAYMENT_CARDHOLDER = 'John Doe';
+import { DEFAULT_PAYMENT_CARD_NUMBER, DEFAULT_PAYMENT_CVV, DEFAULT_PAYMENT_CARDHOLDER, PaymentDetails } from '../test-data/payment';
 
 export class PaymentPage {
   readonly page: Page;
