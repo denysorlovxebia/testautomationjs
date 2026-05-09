@@ -1,55 +1,42 @@
-import { HomePage} from '../pages/HomePage';
-import { ProductPage } from '../pages/ProductPage';
-import { test, expect } from '@playwright/test';
-import { CartPage } from '../pages/CartPage';
+import { test, expect } from './fixtures';
 
-test.use({ storageState: 'storageState.json' });
+test('Verify user can view product details', async ({ app }) => {
+  await app.homePage.openHomePage();
+  await app.homePage.clickOnProduct('Combination Pliers');
 
-test('Verify user can view product details', async ({ page }) => {
-  const homePage = new HomePage(page);
-  const productPage = new ProductPage(page);
-
-  await homePage.openHomePage();
-  await homePage.clickOnProduct('Combination Pliers');
-
-  await expect(page).toHaveURL(/\/product/);
-  await expect(productPage.productName).toHaveText('Combination Pliers');
-  await expect(productPage.price).toContainText('14.15');
+  await expect(app.page).toHaveURL(/\/product/);
+  await expect(app.productPage.productName).toHaveText('Combination Pliers');
+  await expect(app.productPage.price).toContainText('14.15');
 });
 
-test.use({ storageState: 'storageState.json' });
-
-test('E2E: Add product to cart and verify checkout', async ({ page }) => {
-  const homePage = new HomePage(page);
-  const productPage = new ProductPage(page);
-  const cartPage = new CartPage(page);
-
+test('E2E: Add product to cart and verify checkout', async ({ app }) => {
   // Open homepage
-  await homePage.openHomePage();
+  await app.homePage.openHomePage();
 
   // Click product
-  await homePage.clickOnProduct('Slip Joint Pliers');
+  await app.homePage.clickOnProduct('Slip Joint Pliers');
 
   // Assertions (product page)
-  await expect(page).toHaveURL(/\/product/);
-  await expect(productPage.productName).toHaveText('Slip Joint Pliers');
-  await expect(productPage.price).toContainText('9.17');  
+  await expect(app.page).toHaveURL(/\/product/);
+  await expect(app.productPage.productName).toHaveText('Slip Joint Pliers');
+  await expect(app.productPage.price).toContainText('9.17');  
+  
   // Add to cart
-  await productPage.addToCart();
+  await app.productPage.addToCart();
 
   // Alert checks
-  await expect(productPage.alert).toBeVisible();
-  await expect(productPage.alert).toContainText('Product added to shopping cart.');
+  await expect(app.productPage.alert).toBeVisible();
+  await expect(app.productPage.alert).toContainText('Product added to shopping cart.');
 
   // cart quantity
-  await expect(productPage.cartQty).toHaveText('1');
+  await expect(app.productPage.cartQty).toHaveText('1');
 
   // Open cart
-  await homePage.openCart();
+  await app.homePage.openCart();
 
   // Cart assertions
-  await expect(page).toHaveURL('/checkout');
-  await expect(cartPage.rows).toHaveCount(1);
-  await expect(cartPage.productTitle).toHaveText('Slip Joint Pliers');
-  await expect(cartPage.checkoutBtn).toBeVisible();
+  await expect(app.page).toHaveURL('/checkout');
+  await expect(app.cartPage.rows).toHaveCount(1);
+  await expect(app.cartPage.productTitle).toHaveText('Slip Joint Pliers');
+  await expect(app.cartPage.checkoutBtn).toBeVisible();
 });
