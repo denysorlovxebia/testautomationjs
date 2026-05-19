@@ -66,6 +66,38 @@ npx playwright test tests/login.spec.ts
 npx playwright show-report
 ```
 
+### Reporters enabled
+
+- html
+- dot
+- json -> `test-results/results.json`
+- ReportPortal (enabled automatically when RP env vars are set)
+
+### ReportPortal Integration (optional)
+
+1. Install runtime for ReportPortal stack:
+- Docker Desktop, or
+- Rancher Desktop (if company policy blocks Docker Desktop)
+
+2. Start ReportPortal using official quick start from ReportPortal docs.
+
+3. Configure env vars locally in `.env` (see `.env.example`):
+
+```bash
+RP_ENDPOINT=https://your-reportportal-host/api/v2
+RP_PROJECT=your-project
+RP_API_KEY=your-api-key
+RP_LAUNCH=local-playwright-run
+```
+
+4. Run tests normally:
+
+```bash
+npx playwright test
+```
+
+When RP variables are present, Playwright sends launch and test results to ReportPortal in addition to local reports.
+
 ---
 
 ## Configuration

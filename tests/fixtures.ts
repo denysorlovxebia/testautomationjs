@@ -1,6 +1,9 @@
 import type { APIRequestContext } from '@playwright/test';
 import { test as base, expect } from '@playwright/test';
 import { App } from '../pages/App';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 type AppFixtures = {
   app: App;
@@ -13,33 +16,22 @@ export const test = base.extend<AppFixtures>({
     await use(app);
   },
 
-  loggedInApp: async ({ app, request }: { app: App; request: APIRequestContext }, use) => {
-    const response = await request.post('/auth/login', {
-      form: {
-        email: 'customer@practicesoftwaretesting.com',
-        password: 'welcome01',
-      },
-    });
+  loggedInApp: async ({ app }, use) => {
+    // Navigate to login page
+    await app.page.goto('/auth/login');
 
-    expect(response.ok()).toBeTruthy();
+    // Fill login form
+    await app.page.fill('input[placeholder="Your email"]', process.env.USER_EMAIL || 'customer@practicesoftwaretesting.com');
+    await app.page.fill('input[placeholder="Your password"]', process.env.USER_PASSWORD || 'welcome01');
 
-    const storageState = await request.storageState();
+    // Click login button using getByRole for better reliability
+    await app.page.getByRole('button', { name: 'Login' }).click();
 
-    await app.page.context().addCookies(
-      storageState.cookies.map((cookie) => ({
-        name: cookie.name,
-        value: cookie.value,
-        domain: cookie.domain,
-        path: cookie.path,
-        expires: cookie.expires,
-        httpOnly: cookie.httpOnly,
-        secure: cookie.secure,
-        sameSite: cookie.sameSite,
-      }))
-    );
+    // Wait for navigation after login (redirects to /account)
+    await app.page.waitForURL(/\/(account|)?$/);
 
+    // Navigate to home page
     await app.homePage.openHomePage();
-    await expect(app.page).toHaveURL('/');
 
     await use(app);
   },
