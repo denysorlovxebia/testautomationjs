@@ -14,10 +14,6 @@ for (const data of testData) {
   test(`@smoke Verify filtering by "${data.subCategory}" in ${data.category}`, async ({ app }) => {
     await test.step('Open home page', async () => {
       await app.homePage.openHomePage();
-      // Wait for products to be visible
-      await app.page.waitForSelector('[data-test]', { timeout: 5000 }).catch(() => {
-        // Fallback if data-test selector doesn't exist
-      });
     });
 
     await test.step(`Apply filters: ${data.category} > ${data.subCategory}`, async () => {
