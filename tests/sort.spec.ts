@@ -7,19 +7,26 @@ const nameSortOptions = [
 ];
 
 for (const option of nameSortOptions) {
-  test(`Sort by ${option.label}`, async ({ app }) => {
-    await app.homePage.openHomePage();
-    await app.homePage.sortBy(option.value);
+  test(`@smoke Sort by ${option.label}`, async ({ app }) => {
+    await test.step('Open home page', async () => {
+      await app.homePage.openHomePage();
+    });
 
-    const productNames = await app.homePage.getProductNames();
+    await test.step(`Apply sort: ${option.label}`, async () => {
+      await app.homePage.sortBy(option.value);
+    });
 
-    const sorted = [...productNames].sort((a, b) =>
-      option.order === 'asc'
-        ? a.localeCompare(b)
-        : b.localeCompare(a)
-    );
+    await test.step('Verify product names are sorted correctly', async () => {
+      const productNames = await app.homePage.getProductNames();
 
-    expect(productNames).toEqual(sorted);
+      const sorted = [...productNames].sort((a, b) =>
+        option.order === 'asc'
+          ? a.localeCompare(b)
+          : b.localeCompare(a)
+      );
+
+      expect(productNames).toEqual(sorted);
+    });
   });
 }
 
@@ -30,16 +37,23 @@ const priceSortOptions = [
 ];
 
 for (const option of priceSortOptions) {
-  test(`Sort by ${option.label}`, async ({ app }) => {
-    await app.homePage.openHomePage();
-    await app.homePage.sortBy(option.value);
+  test(`@regression Sort by ${option.label}`, async ({ app }) => {
+    await test.step('Open home page', async () => {
+      await app.homePage.openHomePage();
+    });
 
-    const prices = await app.homePage.getProductPrices();
+    await test.step(`Apply sort: ${option.label}`, async () => {
+      await app.homePage.sortBy(option.value);
+    });
 
-    const sorted = [...prices].sort((a, b) =>
-      option.order === 'asc' ? a - b : b - a
-    );
+    await test.step('Verify prices are sorted correctly', async () => {
+      const prices = await app.homePage.getProductPrices();
 
-    expect(prices).toEqual(sorted);
+      const sorted = [...prices].sort((a, b) =>
+        option.order === 'asc' ? a - b : b - a
+      );
+
+      expect(prices).toEqual(sorted);
+    });
   });
 }
